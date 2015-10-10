@@ -15,14 +15,4 @@ public enum ChessPiece {
 	B_QUEEN,
 	B_KING,
 	PIECE_TOTAL;
-	
-//	private int index;
-//	
-//	ChessPiece(int index) {
-//		this.index = index;
-//	}
-//	
-//	int getIndex() {
-//		return index;
-//	}
 }

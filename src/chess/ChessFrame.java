@@ -5,10 +5,6 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JTable;
-import javax.swing.JLabel;
-import java.awt.Component;
 import javax.swing.Box;
 
 public class ChessFrame extends JFrame {
@@ -18,7 +14,6 @@ public class ChessFrame extends JFrame {
 	 */
 	private static final long serialVersionUID = -6981708911796843769L;
 	private JPanel mainPanel;
-	private ChessBoard board;
 
 	/**
 	 * Launch the application.

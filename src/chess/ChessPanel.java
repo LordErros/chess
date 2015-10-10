@@ -1,16 +1,16 @@
 package chess;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
-
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class ChessPanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2080570957860465257L;
+	
 	private ChessBoard board;
 	private JLabel title;
 	
