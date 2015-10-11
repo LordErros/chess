@@ -3,10 +3,14 @@ package chess;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
-public class ChessBoard extends JPanel {
+public class ChessBoard extends JPanel implements MouseListener {
 	/**
 	 * 
 	 */
@@ -18,10 +22,26 @@ public class ChessBoard extends JPanel {
 	
 	ChessPiece[][] board;
 	
+	Player whitePlayer;
+	Player blackPlayer;
+	Player currentPlayer;
+	
+	Point selectedCell;
+	
 	public ChessBoard() {
 		super();
 		initImages();
 		initBoard();
+		
+		whitePlayer = new HumanPlayer(Player.WHITE);
+		blackPlayer = new HumanPlayer(Player.BLACK);
+		currentPlayer = whitePlayer;
+		currentPlayer.activate();
+		
+		validate();
+		repaint();
+		
+		addMouseListener(this);
 	}
 	
 	public void initImages() {
@@ -78,6 +98,11 @@ public class ChessBoard extends JPanel {
 		for(int y = 0; y < 8; y++) {
 			for(int x = 0; x < 8; x++) {
 				g.setColor((x%2 == y%2)?  Color.GRAY : Color.DARK_GRAY);
+				if(selectedCell != null) {
+					if(x == selectedCell.getX() && y == selectedCell.getY()) {
+						g.setColor(Color.GREEN);
+					}
+				}
 				g.fillRect(x*40, y*40, 40, 40);
 				if(board[y][x] != ChessPiece.EMPTY) {
 					images[board[y][x].ordinal()].paintIcon(this, g, x*40, y*40);
@@ -90,5 +115,58 @@ public class ChessBoard extends JPanel {
 	public Dimension getPreferredSize() {
 		return new Dimension(320,320);
 	}
+
 	
+	public void performMove(Move move) {
+		System.out.println("Performing move...");
+		if(MoveValidation.isValid(move, board, currentPlayer)) {
+			board[(int)move.getDestination().getY()][(int)move.getDestination().getX()] = board[(int)move.getStart().getY()][(int)move.getStart().getX()];
+			board[(int)move.getStart().getY()][(int)move.getStart().getX()] = ChessPiece.EMPTY;
+			validate();
+			repaint();
+			if(currentPlayer == whitePlayer) {
+				currentPlayer = blackPlayer;
+			}
+			else if(currentPlayer == blackPlayer) {
+				currentPlayer = whitePlayer;
+			}
+		}
+		else {System.out.println("Failed - move is not valid.");}
+	}
+	
+	@Override
+	public void mouseClicked(MouseEvent e) {
+
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		if(selectedCell != null) {
+			Point dest = new Point(e.getX() / 40, e.getY() / 40);
+			performMove(new Move(selectedCell, dest));
+			selectedCell = null;
+		}
+		else if(board[e.getY() / 40][e.getX() / 40].getColour() == currentPlayer.getColour()) {
+			selectedCell = new Point(e.getX() / 40, e.getY() / 40);
+		}
+		validate();
+		repaint();
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		
+	}
+
+
 }
