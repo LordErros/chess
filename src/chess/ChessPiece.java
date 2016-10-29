@@ -1,7 +1,7 @@
 package chess;
 
 public enum ChessPiece {
-	EMPTY(Player.BLACK),
+	EMPTY(Player.WHITE),
 	W_PAWN(Player.WHITE),
 	W_ROOK(Player.WHITE),
 	W_KNIGHT(Player.WHITE),
@@ -22,8 +22,18 @@ public enum ChessPiece {
 		this.player = player;
 	}
 	
+	//Use isColour instead when comparing, as EMPTY has to have a colour.
 	public boolean getColour() {
 		return player;
+	}
+	
+	public boolean isColour(boolean colour) {
+		if(this == EMPTY) {
+			return false;
+		}
+		else {
+			return player == colour;
+		}
 	}
 	
 }

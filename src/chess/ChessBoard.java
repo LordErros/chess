@@ -120,8 +120,9 @@ public class ChessBoard extends JPanel implements MouseListener {
 	public void performMove(Move move) {
 		System.out.println("Performing move...");
 		if(MoveValidation.isValid(move, board, currentPlayer)) {
-			board[(int)move.getDestination().getY()][(int)move.getDestination().getX()] = board[(int)move.getStart().getY()][(int)move.getStart().getX()];
-			board[(int)move.getStart().getY()][(int)move.getStart().getX()] = ChessPiece.EMPTY;
+//			board[(int)move.getDestination().getY()][(int)move.getDestination().getX()] = board[(int)move.getStart().getY()][(int)move.getStart().getX()];
+//			board[(int)move.getStart().getY()][(int)move.getStart().getX()] = ChessPiece.EMPTY;
+			board = MoveValidation.doMove(move, board);
 			validate();
 			repaint();
 			if(currentPlayer == whitePlayer) {
@@ -151,16 +152,18 @@ public class ChessBoard extends JPanel implements MouseListener {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if(selectedCell != null) {
-			Point dest = new Point(e.getX() / 40, e.getY() / 40);
-			performMove(new Move(selectedCell, dest));
-			selectedCell = null;
+		if(e.getX() < getPreferredSize().getWidth() && e.getY() < getPreferredSize().getHeight()) {
+			if(selectedCell != null) {
+				Point dest = new Point(e.getX() / 40, e.getY() / 40);
+				performMove(new Move(selectedCell, dest));
+				selectedCell = null;
+			}
+			else if(board[e.getY() / 40][e.getX() / 40].getColour() == currentPlayer.getColour()) {
+				selectedCell = new Point(e.getX() / 40, e.getY() / 40);
+			}
+			validate();
+			repaint();
 		}
-		else if(board[e.getY() / 40][e.getX() / 40].getColour() == currentPlayer.getColour()) {
-			selectedCell = new Point(e.getX() / 40, e.getY() / 40);
-		}
-		validate();
-		repaint();
 	}
 
 	@Override
