@@ -6,12 +6,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class ChessPanel extends JPanel {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 2080570957860465257L;
 	
-	private ChessBoard board;
+	private ChessBoardDisplay board;
 	private JLabel title;
 	
 	public ChessPanel() {
@@ -22,7 +20,7 @@ public class ChessPanel extends JPanel {
 		title = new JLabel("Play Chess!");
 		add(title);
 		
-		board = new ChessBoard();
+		board = new ChessBoardDisplay();
 		add(board);
 		board.setSize(getPreferredSize());
 		

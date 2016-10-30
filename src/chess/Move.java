@@ -1,6 +1,6 @@
 package chess;
 
-import java.awt.Point;
+//import java.awt.Point;
 
 public class Move {
 	private Point start, destination;
