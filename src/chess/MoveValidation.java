@@ -17,45 +17,59 @@ public class MoveValidation {
 	 * @param player	the player whose turn it is
 	 * @return			whether or not the move is valid
 	 */
-	public static boolean isValid(Move move, ChessBoard board, Player player) {
-		boolean result = false;
-		
+	public static boolean isValid(Move move, ChessBoard board, Player player, boolean ignoreCheck) {
 		int startX = move.getStart().getX();
 		int startY = move.getStart().getY();
 		int destinationX = move.getDestination().getX();
 		int destinationY = move.getDestination().getY();
-		
+
+		if(!ignoreCheck) {
+			ChessBoard tempBoard = board.clone();
+			tempBoard.doMove(move, player);
+			Point kingLocation = new Point(0,0);
+			
+			for(int x=0; x<ChessBoard.WIDTH; x++) {
+				for(int y=0; y<ChessBoard.HEIGHT; y++) {
+					if(tempBoard.get(x, y) == ChessPiece.W_KING && player.getColour() == Player.WHITE) {
+						kingLocation.setXY(x, y);
+					}
+					else if(tempBoard.get(x, y) == ChessPiece.B_KING && player.getColour() == Player.BLACK) {
+						kingLocation.setXY(x, y);
+					}
+				}
+			}
+			
+			if(pieceIsInCheck(kingLocation,tempBoard)) {
+				return false;
+			}
+		}
 		if(!board.get(destinationX, destinationY).isColour(player.getColour()) && board.get(startX, startY).isColour(player.getColour())) {
 			switch(board.get(startX, startY)) {
 				case W_PAWN: case B_PAWN:
-					result = isValidPawn(startX, startY, destinationX, destinationY, board, player);
-					break;
-			
+					return isValidPawn(startX, startY, destinationX, destinationY, board, player);
+				
 				case W_KNIGHT: case B_KNIGHT:
-					result = isValidKnight(startX, startY, destinationX, destinationY, board, player);
-				break;
-			
+					return isValidKnight(startX, startY, destinationX, destinationY, board, player);
+				
 				case W_ROOK: case B_ROOK:
-					result = isValidRook(startX, startY, destinationX, destinationY, board, player);
-				break;
+					return isValidRook(startX, startY, destinationX, destinationY, board, player);
 				
 				case W_BISHOP: case B_BISHOP:
-					result = isValidBishop(startX, startY, destinationX, destinationY, board, player);
-				break;
-				
+					return isValidBishop(startX, startY, destinationX, destinationY, board, player);
+						
 				case W_QUEEN: case B_QUEEN:
-					result = isValidQueen(startX, startY, destinationX, destinationY, board, player);
-				break;
-				
+					return isValidQueen(startX, startY, destinationX, destinationY, board, player);
+						
 				case W_KING: case B_KING:
-					result = isValidKing(startX, startY, destinationX, destinationY, board, player);
-				break;
-				
+					return isValidKing(startX, startY, destinationX, destinationY, board, player, move);
+					
 				default:
-				break;
+					return false;
 			}
 		}
-		return result;
+		else {
+			return false;
+		}
 	}
 	
 	//These are private as they are only to be called by isValid.
@@ -66,7 +80,7 @@ public class MoveValidation {
 		int startLine = 0;
 		if(player.getColour() == Player.WHITE) {
 			direction = -1;
-			startLine = 6;
+			startLine = ChessBoard.HEIGHT - 2;
 		}
 		else {
 			direction = 1;
@@ -147,13 +161,26 @@ public class MoveValidation {
 		return isValidRook(startX, startY, destinationX, destinationY, board, player) || isValidBishop(startX, startY, destinationX, destinationY, board, player);
 	}
 	
-	private static boolean isValidKing(int startX, int startY, int destinationX, int destinationY, ChessBoard board, Player player) {
+	private static boolean isValidKing(int startX, int startY, int destinationX, int destinationY, ChessBoard board, Player player, Move move) {
 		boolean result = false;
-		if((Math.abs(destinationX - startX) <= 1 && Math.abs(destinationY - startY) <= 1)) {
-			ChessBoard tempBoard = board.clone();
-			tempBoard.doMove(new Move(new Point(startX, startY), new Point(destinationX,destinationY)));
-			if(!pieceIsInCheck(new Point(destinationX, destinationY), tempBoard)) {
+		ChessBoard tempBoard = board.clone();
+		tempBoard.doMove(new Move(new Point(startX, startY), new Point(destinationX,destinationY)), player);
+		if(pieceIsInCheck(new Point(destinationX, destinationY), tempBoard)) {
+			result = false;
+		}
+		else if((Math.abs(destinationX - startX) <= 1 && Math.abs(destinationY - startY) <= 1)) {
+			result = true;
+		}
+		else if(destinationX - startX == 2) {
+			if(player.canCastleKingSide()) {
 				result = true;
+				move.setCastle(true);
+			}
+		}
+		else if(destinationX - startY == -2) {
+			if(player.canCastleQueenSide()) {
+				result = true;
+				move.setCastle(true);
 			}
 		}
 		return result;
@@ -172,8 +199,8 @@ public class MoveValidation {
 		
 		boolean opponentColour = !board.get(piece.getX(), piece.getY()).getColour();
 		System.out.println(opponentColour);
-		for(int y=0; y<8; y++) {
-			for(int x=0; x<8; x++) {
+		for(int y=0; y<ChessBoard.HEIGHT; y++) {
+			for(int x=0; x<ChessBoard.WIDTH; x++) {
 				/*
 				 * A king is in check if it can be taken by another piece. A special case needs to be
 				 * made for kings putting other kings in check to avoid an infinite loop where the game,
@@ -182,7 +209,7 @@ public class MoveValidation {
 				 * the special case only judges the distance between kings and disregards check.
 				 */
 				if(board.get(x, y).isColour(opponentColour) && board.get(x, y) != ChessPiece.W_KING && board.get(x, y) != ChessPiece.B_KING) {
-					if(isValid(new Move(new Point(x,y), piece), board, new HumanPlayer(opponentColour))) {
+					if(isValid(new Move(new Point(x,y), piece), board, new HumanPlayer(opponentColour), true)) {
 						result = true;
 					}
 				}

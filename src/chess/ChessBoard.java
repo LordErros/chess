@@ -4,8 +4,15 @@ public class ChessBoard {
 	
 	private ChessPiece[][] board = new ChessPiece[8][8];
 	
+	public static final int WIDTH = 8;
+	public static final int HEIGHT = 8;
+	
 	public ChessPiece get(int x, int y) {
 		return board[y][x];
+	}
+	
+	public ChessPiece get(Point p) {
+		return board[p.getY()][p.getX()];
 	}
 	
 	public void init() {
@@ -49,9 +56,35 @@ public class ChessBoard {
 		board[y][x] = piece;
 	}
 	
-	public void doMove(Move move) {
-		board[(int)move.getDestination().getY()][(int)move.getDestination().getX()] = board[(int)move.getStart().getY()][(int)move.getStart().getX()];
-		board[(int)move.getStart().getY()][(int)move.getStart().getX()] = ChessPiece.EMPTY;
+	public void doMove(Move move, Player currentPlayer) {
+		
+		Point start = move.getStart();
+		Point dest = move.getDestination();
+		
+		if(get(start) == ChessPiece.W_KING || get(start) == ChessPiece.B_KING) {
+			currentPlayer.setCanCastleKingSide(false);
+			currentPlayer.setCanCastleQueenSide(false);
+		}
+		
+		if(start.getY() == 0 || start.getY() == HEIGHT) {
+			if(start.getX() == 0) {
+				currentPlayer.setCanCastleQueenSide(false);
+			}
+			else if(start.getX() == WIDTH) {
+				currentPlayer.setCanCastleKingSide(false);
+			}
+		}
+		
+		board[dest.getY()][dest.getX()] = board[start.getY()][start.getX()];
+		board[start.getY()][start.getX()] = ChessPiece.EMPTY;
+		if(move.isCastle()) {
+			if(board[dest.getY()][dest.getX()-1] == ChessPiece.EMPTY) {
+				doMove(new Move(new Point(dest.getX() + 1, dest.getY()), new Point(dest.getX() - 1, dest.getY())), currentPlayer);
+			}
+			else if(board[dest.getY()][dest.getX()+1] == ChessPiece.EMPTY) {
+				doMove(new Move(new Point(dest.getX() - 1, dest.getY()), new Point(dest.getX() + 1, dest.getY())), currentPlayer);
+			}
+		}
 	}
 	
 	public ChessBoard clone() {

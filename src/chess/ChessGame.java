@@ -32,8 +32,8 @@ public class ChessGame {
 	
 	public void performMove(Move move) {
 		System.out.println("Performing move...");
-		if(MoveValidation.isValid(move, board, currentPlayer)) {
-			board.doMove(move);
+		if(MoveValidation.isValid(move, board, currentPlayer, false)) {
+			board.doMove(move, currentPlayer);
 			if(currentPlayer == whitePlayer) {
 				currentPlayer = blackPlayer;
 			}
