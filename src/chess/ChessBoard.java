@@ -31,18 +31,18 @@ public class ChessBoard {
 				break;
 				
 				case 1: case 6:
-					board[0][x] = ChessPiece.B_KNIGHT;
-					board[7][x] = ChessPiece.W_KNIGHT;
+//					board[0][x] = ChessPiece.B_KNIGHT;
+//					board[7][x] = ChessPiece.W_KNIGHT;
 				break;
 				
 				case 2: case 5:
-					board[0][x] = ChessPiece.B_BISHOP;
-					board[7][x] = ChessPiece.W_BISHOP;
+//					board[0][x] = ChessPiece.B_BISHOP;
+//					board[7][x] = ChessPiece.W_BISHOP;
 				break;
 				
 				case 3:
-					board[0][x] = ChessPiece.B_QUEEN;
-					board[7][x] = ChessPiece.W_QUEEN;
+//					board[0][x] = ChessPiece.B_QUEEN;
+//					board[7][x] = ChessPiece.W_QUEEN;
 				break;
 				
 				case 4:
@@ -61,28 +61,17 @@ public class ChessBoard {
 		Point start = move.getStart();
 		Point dest = move.getDestination();
 		
-		if(get(start) == ChessPiece.W_KING || get(start) == ChessPiece.B_KING) {
-			currentPlayer.setCanCastleKingSide(false);
-			currentPlayer.setCanCastleQueenSide(false);
-		}
 		
-		if(start.getY() == 0 || start.getY() == HEIGHT) {
-			if(start.getX() == 0) {
-				currentPlayer.setCanCastleQueenSide(false);
-			}
-			else if(start.getX() == WIDTH) {
-				currentPlayer.setCanCastleKingSide(false);
-			}
-		}
 		
 		board[dest.getY()][dest.getX()] = board[start.getY()][start.getX()];
 		board[start.getY()][start.getX()] = ChessPiece.EMPTY;
 		if(move.isCastle()) {
-			if(board[dest.getY()][dest.getX()-1] == ChessPiece.EMPTY) {
-				doMove(new Move(new Point(dest.getX() + 1, dest.getY()), new Point(dest.getX() - 1, dest.getY())), currentPlayer);
+			if(board[dest.getY()][dest.getX()+1] == ChessPiece.EMPTY) {
+				//If castling queen side, the rook is two spaces away.
+				doMove(new Move(new Point(dest.getX() - 2, dest.getY()), new Point(dest.getX() + 1, dest.getY())), currentPlayer);
 			}
-			else if(board[dest.getY()][dest.getX()+1] == ChessPiece.EMPTY) {
-				doMove(new Move(new Point(dest.getX() - 1, dest.getY()), new Point(dest.getX() + 1, dest.getY())), currentPlayer);
+			else if(board[dest.getY()][dest.getX()-1] == ChessPiece.EMPTY) {
+				doMove(new Move(new Point(dest.getX() + 1, dest.getY()), new Point(dest.getX() - 1, dest.getY())), currentPlayer);
 			}
 		}
 	}

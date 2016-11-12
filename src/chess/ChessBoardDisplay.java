@@ -52,6 +52,18 @@ public class ChessBoardDisplay extends JPanel implements MouseListener {
 					if(x == selectedCell.getX() && y == selectedCell.getY()) {
 						g.setColor(Color.GREEN);
 					}
+					else {
+						Move mv = new Move(selectedCell, new Point(x,y));
+						if(MoveValidation.isValid(mv, game.getBoard(), game.getCurrentPlayer(), false)) {
+							if(mv.isCastle()) {
+								g.setColor(Color.YELLOW);
+							}
+							else {
+								g.setColor(Color.BLUE);
+							}
+						}
+						
+					}
 				}
 				g.fillRect(x*40, y*40, 40, 40);
 				if(game.getBoard().get(x, y) != ChessPiece.EMPTY) {

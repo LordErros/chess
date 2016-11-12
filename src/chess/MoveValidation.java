@@ -171,16 +171,18 @@ public class MoveValidation {
 		else if((Math.abs(destinationX - startX) <= 1 && Math.abs(destinationY - startY) <= 1)) {
 			result = true;
 		}
-		else if(destinationX - startX == 2) {
-			if(player.canCastleKingSide()) {
-				result = true;
-				move.setCastle(true);
+		else if(startY == destinationY) {
+			if(destinationX - startX == 2) {
+				if(player.canCastleKingSide()) {
+					result = true;
+					move.setCastle(true);
+				}
 			}
-		}
-		else if(destinationX - startY == -2) {
-			if(player.canCastleQueenSide()) {
-				result = true;
-				move.setCastle(true);
+			else if(destinationX - startX == -2) {
+				if(player.canCastleQueenSide()) {
+					result = true;
+					move.setCastle(true);
+				}
 			}
 		}
 		return result;
@@ -198,7 +200,6 @@ public class MoveValidation {
 		boolean result = false;
 		
 		boolean opponentColour = !board.get(piece.getX(), piece.getY()).getColour();
-		System.out.println(opponentColour);
 		for(int y=0; y<ChessBoard.HEIGHT; y++) {
 			for(int x=0; x<ChessBoard.WIDTH; x++) {
 				/*
@@ -215,7 +216,6 @@ public class MoveValidation {
 				}
 				else if((board.get(x, y) == ChessPiece.W_KING && opponentColour == Player.WHITE) || (board.get(x, y) == ChessPiece.B_KING && opponentColour == Player.BLACK)) {
 					if(Math.abs(x - piece.getX()) <= 1 && Math.abs(y - piece.getY()) <= 1) {
-						System.out.println("Special case");
 						result = true;
 					}
 				}

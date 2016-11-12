@@ -31,9 +31,24 @@ public class ChessGame {
 	}
 	
 	public void performMove(Move move) {
+		Point start = move.getStart();
+		
 		System.out.println("Performing move...");
 		if(MoveValidation.isValid(move, board, currentPlayer, false)) {
 			board.doMove(move, currentPlayer);
+			if(board.get(start) == ChessPiece.W_KING || board.get(start) == ChessPiece.B_KING) {
+				currentPlayer.setCanCastleKingSide(false);
+				currentPlayer.setCanCastleQueenSide(false);
+			}
+			
+			if(start.getY() == 0 || start.getY() == ChessBoard.HEIGHT) {
+				if(start.getX() == 0) {
+					currentPlayer.setCanCastleQueenSide(false);
+				}
+				else if(start.getX() == ChessBoard.WIDTH) {
+					currentPlayer.setCanCastleKingSide(false);
+				}
+			}
 			if(currentPlayer == whitePlayer) {
 				currentPlayer = blackPlayer;
 			}
